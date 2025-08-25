@@ -1,6 +1,12 @@
+<<<<<<< HEAD
 # 🛒 E-commerce Microservices
 
 E-commerce platform with microservices architecture (.NET, RabbitMQ, API Gateway, JWT).
+=======
+﻿# 🛒 E-commerce Microservices
+
+Plataforma de e-commerce desenvolvida com **arquitetura de microserviços** usando .NET, RabbitMQ, SQL Server e API Gateway.
+>>>>>>> a1b7fb9 (first commit)
 
 ## 📂 Estrutura do Projeto
 - `src/StockService` → Inventory management microservice
