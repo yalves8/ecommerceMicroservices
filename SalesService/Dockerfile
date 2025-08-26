@@ -10,4 +10,4 @@ FROM mcr.microsoft.com/dotnet/aspnet:8.0
 WORKDIR /app
 COPY --from=build /app/out .
 EXPOSE 80
-ENTRYPOINT ["dotnet", "SalesService.dll"]
+ENTRYPOINT ["dotnet", "OrderService.dll"]
