@@ -7,7 +7,7 @@ services:
     container_name: sqlserver
     environment:
       - ACCEPT_EULA=Y
-      - SA_PASSWORD=pass123
+      - SA_PASSWORD=Pass1234!
     ports:
       - "1433:1433"
     networks:
@@ -28,7 +28,7 @@ services:
   # Stock Microservice
   stock-service:
     build:
-      context: ../../src/Services/StockService
+      context: .\StockService
       dockerfile: Dockerfile
     container_name: stock-service
     depends_on:
@@ -39,14 +39,15 @@ services:
     networks:
       - ecommerce-network
     environment:
-      - ConnectionStrings__DefaultConnection=Server=sqlserver;Database=StockDb;User Id=sa;Password=pass123;
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ConnectionStrings__DefaultConnection=Server=sqlserver;Database=StockDb;User Id=sa;Password=Pass1234!;TrustServerCertificate=True;
       - RabbitMQ__Host=rabbitmq
       - RabbitMQ__Queue=sales-confirmed
 
   # Sales Microservice
   sales-service:
     build:
-      context: ../../src/Services/SalesService
+      context: .\SalesService
       dockerfile: Dockerfile
     container_name: sales-service
     depends_on:
@@ -57,12 +58,12 @@ services:
     networks:
       - ecommerce-network
     environment:
-      - ConnectionStrings__DefaultConnection=Server=sqlserver;Database=SalesDb;User Id=sa;Password=pass123;
+      - ConnectionStrings__DefaultConnection=Server=sqlserver;Database=SalesDb;User Id=sa;Password=Pass1234!;TrustServerCertificate=True;
 
   # API Gateway
   api-gateway:
     build:
-      context: ../../src/APIGateway
+      context: ./APIGateway
       dockerfile: Dockerfile
     container_name: api-gateway
     depends_on:

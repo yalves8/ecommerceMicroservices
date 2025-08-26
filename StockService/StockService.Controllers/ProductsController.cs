@@ -47,8 +47,8 @@ namespace StockService.Controllers
             return new ProductResponse(p.Id, p.Name, p.Description, p.Price, p.Quantity);
         }
 
-        // PUT /api/products/{id}/estoque  (atualização manual de estoque)
-        [HttpPut("{id:int}/estoque")]
+        // PUT /api/products/{id}/stock  (atualização manual de stock)
+        [HttpPut("{id:int}/stock")]
         public async Task<IActionResult> UpdateStock([FromRoute] int id, [FromBody] UpdateStockDto dto)
         {
             var p = await _db.Products.FindAsync(id);

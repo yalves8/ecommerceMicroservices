@@ -13,11 +13,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SalesService", "SalesServic
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Infrastructure", "Infrastructure", "{6DCBDA43-5D1E-4497-98FD-AEC00920DBF2}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Context", "Context", "{0FB4462C-E8A0-44B0-AF46-BA65A821C2C9}"
-	ProjectSection(SolutionItems) = preProject
-		StockDbContext.cs = StockDbContext.cs
-	EndProjectSection
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Docker", "Docker", "{8AF0FB8F-F8E6-44B8-A90A-44A989864D2F}"
 	ProjectSection(SolutionItems) = preProject
 		docker-compose.yaml = docker-compose.yaml
@@ -28,7 +23,6 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{8EC462FD-D22E-90A8-E5CE-7E832BA40C5D}"
 	ProjectSection(SolutionItems) = preProject
 		.gitignore = .gitignore
-		README.md = README.md
 	EndProjectSection
 EndProject
 Global
@@ -57,7 +51,6 @@ Global
 		{8D7DBFE6-8647-4747-9DCF-3ED9FD4852BC} = {02EA681E-C7D8-13C7-8484-4AC65E1B71E8}
 		{B65D91BA-76E5-497E-BA45-B03383076EB6} = {8D7DBFE6-8647-4747-9DCF-3ED9FD4852BC}
 		{596E34AF-FAE1-4A69-9525-87F177E33FDD} = {8D7DBFE6-8647-4747-9DCF-3ED9FD4852BC}
-		{0FB4462C-E8A0-44B0-AF46-BA65A821C2C9} = {6DCBDA43-5D1E-4497-98FD-AEC00920DBF2}
 		{8AF0FB8F-F8E6-44B8-A90A-44A989864D2F} = {6DCBDA43-5D1E-4497-98FD-AEC00920DBF2}
 		{84B7BF94-9DEC-4490-8E2E-C7CD33D193A5} = {02EA681E-C7D8-13C7-8484-4AC65E1B71E8}
 	EndGlobalSection
