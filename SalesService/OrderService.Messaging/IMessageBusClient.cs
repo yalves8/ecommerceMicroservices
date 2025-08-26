@@ -1,7 +1,9 @@
-﻿namespace OrderService.OrderService.Messaging
+﻿using OrderService.OrderService.Contracts.Events;
+
+namespace OrderService.OrderService.Messaging
 {
     public interface IMessageBusClient
     {
-        Task PublishAsync<T>(T message, string queueName, CancellationToken ct = default);
+        Task PublishOrderConfirmed(SalesConfirmedEvent evt);
     }
 }

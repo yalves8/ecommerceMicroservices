@@ -1,5 +1,8 @@
 using Microsoft.AspNetCore.Mvc;
 using OrderService.OrderService.Contracts;
+using OrderService.OrderService.Contracts.Events;
+using OrderService.OrderService.Domain.Entities;
+using OrderService.OrderService.Messaging;
 using OrderService.OrderService.Services;
 
 namespace SalesService.Controllers
@@ -8,26 +11,45 @@ namespace SalesService.Controllers
     [Route("[controller]")]
     public class OrderController : ControllerBase
     {
-        private readonly IOrderService _orderService;
+        private readonly ILogger<OrderController> _logger;
+        private readonly IMessageBusClient _bus;
 
-        public OrderController(IOrderService orderService)
+        public OrderController(ILogger<OrderController> logger, IMessageBusClient bus)
         {
-            _orderService = orderService;
+            _logger = logger;
+            _bus = bus;
         }
 
         [HttpPost]
         public async Task<IActionResult> CreateOrder([FromBody] CreateOrderRequest request)
         {
-            var items = request.Items.Select(i => (i.ProductId, i.Quantity)).ToList();
-            var order = await _orderService.CreateOrderAsync(items);
-            return CreatedAtAction(nameof(GetOrderById), new { id = order.Id }, order);
-        }
+            var order = new Order
+            {
+                Items = request.Items.Select(i => new OrderItem
+                {
+                    ProductId = i.ProductId,
+                    Quantity = i.Quantity
+                }).ToList()
+            };
 
-        [HttpGet("{id}")]
-        public async Task<IActionResult> GetOrderById(Guid id)
-        {
-            var order = await _orderService.GetOrderByIdAsync(id);
-            if (order == null) return NotFound();
+            // 2. Criar evento de integração
+            var evt = new SalesConfirmedEvent
+            {
+                OrderId = order.Id,
+                Items = order.Items.Select(i => new SalesConfirmedItem
+                {
+                    ProductId = i.ProductId,
+                    Quantity = i.Quantity
+                }).ToList()
+            };
+            // Change this line:
+            // OrderId = order.Id,
+
+            // 3. Publicar no RabbitMQ
+            await _bus.PublishOrderConfirmed(evt);
+
+            _logger.LogInformation("Order {OrderId} created and event published", order.Id);
+
             return Ok(order);
         }
     }
