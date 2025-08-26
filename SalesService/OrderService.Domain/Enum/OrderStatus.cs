@@ -1,6 +1,9 @@
 ﻿namespace OrderService.OrderService.Domain.Enum
 {
-    public class OrderStatus
+    public enum OrderStatus
     {
+        Pending,
+        Confirmed,
+        Canceled
     }
 }

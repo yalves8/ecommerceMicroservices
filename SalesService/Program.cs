@@ -1,4 +1,7 @@
 
+using Microsoft.EntityFrameworkCore;
+using OrderService.OrderService.Infrastructure.Data;
+
 namespace SalesService
 {
     public class Program
@@ -7,26 +10,45 @@ namespace SalesService
         {
             var builder = WebApplication.CreateBuilder(args);
 
-            // Add services to the container.
+            builder.WebHost.ConfigureKestrel(options =>
+            {
+                options.ListenAnyIP(80); // container: porta 80
+            });
 
             builder.Services.AddControllers();
-            // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
-            builder.Services.AddOpenApi();
+            builder.Services.AddEndpointsApiExplorer(); // necessário para Minimal API
+            builder.Services.AddSwaggerGen(); // ativa o Swagger
+
+            // Configuração do EF Core
+            var conn = builder.Configuration.GetConnectionString("DefaultConnection");
+            builder.Services.AddDbContext<OrderDbContext>(opt => opt.UseSqlServer(conn));
+
+            // BackgroundService do RabbitMQ (consumidor)
+
 
             var app = builder.Build();
 
-            // Configure the HTTP request pipeline.
+            // Configure middleware
             if (app.Environment.IsDevelopment())
             {
-                app.MapOpenApi();
+                app.UseSwagger();
+                app.UseSwaggerUI(c =>
+                {
+                    c.SwaggerEndpoint("/swagger/v1/swagger.json", "OrderService API V1");
+                    c.RoutePrefix = string.Empty;
+                });
+            }
+
+            using (var scope = app.Services.CreateScope())
+            {
+                var db = scope.ServiceProvider.GetRequiredService<OrderDbContext>();
+                db.Database.Migrate();
             }
 
             app.UseHttpsRedirection();
-
             app.UseAuthorization();
-
-
             app.MapControllers();
+            app.MapGet("/", () => Results.Ok("OrderService OK"));
 
             app.Run();
         }

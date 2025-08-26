@@ -1,6 +1,10 @@
-﻿namespace OrderService.OrderService.Services
+﻿using OrderService.OrderService.Domain.Entities;
+
+namespace OrderService.OrderService.Services
 {
-    public class IOrderService
+    public interface IOrderService
     {
+        Task<Order> CreateOrderAsync(List<(string productId, int quantity)> items);
+        Task<Order?> GetOrderByIdAsync(Guid id);
     }
 }

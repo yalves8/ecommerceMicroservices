@@ -1,6 +1,11 @@
-﻿namespace OrderService.OrderService.Infrastructure.Repositories
+﻿using OrderService.OrderService.Domain.Entities;
+
+namespace OrderService.OrderService.Infrastructure.Repositories
 {
-    public class IOrderRepository
+    public interface IOrderRepository
     {
+        Task<Order> GetByIdAsync(Guid id);
+        Task AddAsync(Order order);
+        Task SaveChangesAsync();
     }
 }
