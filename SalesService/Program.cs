@@ -1,6 +1,7 @@
 
 using Microsoft.EntityFrameworkCore;
 using OrderService.OrderService.Infrastructure.Data;
+using OrderService.OrderService.Messaging;
 
 namespace SalesService
 {
@@ -22,6 +23,7 @@ namespace SalesService
             // Configuração do EF Core
             var conn = builder.Configuration.GetConnectionString("DefaultConnection");
             builder.Services.AddDbContext<OrderDbContext>(opt => opt.UseSqlServer(conn));
+            builder.Services.AddSingleton<IMessageBusClient, RabbitMQMessageBusClient>();
 
             // BackgroundService do RabbitMQ (consumidor)
 

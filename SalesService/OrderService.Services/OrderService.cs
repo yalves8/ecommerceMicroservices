@@ -1,34 +1,25 @@
 ﻿using OrderService.OrderService.Domain.Entities;
 using OrderService.OrderService.Domain.Enum;
 using OrderService.OrderService.Infrastructure.Repositories;
+using OrderService.OrderService.Messaging;
+using StockService.Contracts;
 
 namespace OrderService.OrderService.Services
 {
     public class OrderService : IOrderService
     {
         private readonly IOrderRepository _repository;
+        private readonly IMessageBusClient _messageBus;
 
-        public OrderService(IOrderRepository repository)
+        public OrderService(IOrderRepository repository, IMessageBusClient messageBus)
         {
             _repository = repository;
+            _messageBus = messageBus;
         }
 
-        public async Task<Order> CreateOrderAsync(List<(string productId, int quantity)> items)
+        public Task<Order> CreateOrderAsync(List<(string productId, int quantity)> items)
         {
-            var order = new Order
-            {
-                Status = OrderStatus.Pending,
-                Items = items.Select(i => new OrderItem
-                {
-                    ProductId = i.productId,
-                    Quantity = i.quantity
-                }).ToList()
-            };
-
-            await _repository.AddAsync(order);
-            await _repository.SaveChangesAsync();
-
-            return order;
+            throw new NotImplementedException();
         }
 
         public async Task<Order?> GetOrderByIdAsync(Guid id)
