@@ -40,6 +40,8 @@ namespace StockService.Messaging
                 try
                 {
                     var json = Encoding.UTF8.GetString(ea.Body.ToArray());
+
+                    _logger.LogInformation("Received message from queue '{queue}': {json}", queue, json);
                     var evt = JsonSerializer.Deserialize<SalesConfirmedEvent>(json, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
 
                     if (evt?.Items is null || evt.Items.Count == 0)
@@ -60,6 +62,7 @@ namespace StockService.Messaging
 
                     await db.SaveChangesAsync(ct);
 
+                    //comment line to observe the message requeue
                     await _ch.BasicAckAsync(ea.DeliveryTag, multiple: false, cancellationToken: ct);
                 }
                 catch (Exception ex)
