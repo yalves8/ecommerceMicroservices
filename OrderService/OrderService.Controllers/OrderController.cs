@@ -5,7 +5,7 @@ using OrderService.OrderService.Domain.Entities;
 using OrderService.OrderService.Messaging;
 using OrderService.OrderService.Services;
 
-namespace SalesService.Controllers
+namespace OrderService.Controllers
 {
     [ApiController]
     [Route("[controller]")]

@@ -42,23 +42,27 @@ services:
       - ASPNETCORE_ENVIRONMENT=Development
       - ConnectionStrings__DefaultConnection=Server=sqlserver;Database=StockDb;User Id=sa;Password=Pass1234!;TrustServerCertificate=True;
       - RabbitMQ__Host=rabbitmq
-      - RabbitMQ__Queue=order-confirmed
+      - RabbitMQ__Queue=sales-confirmed
 
   # order Microservice
   order-service:
     build:
-      context: .\orderService
-      dockerfile: Dockerfile
+      context: ./
+      dockerfile: OrderService/Dockerfile
     container_name: order-service
     depends_on:
       - sqlserver
       - rabbitmq
+      - stock-service
     ports:
       - "5002:80"
     networks:
       - ecommerce-network
     environment:
-      - ConnectionStrings__DefaultConnection=Server=sqlserver;Database=orderDb;User Id=sa;Password=Pass1234!;TrustServerCertificate=True;
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ConnectionStrings__DefaultConnection=Server=sqlserver;Database=OrderDb;User Id=sa;Password=Pass1234!;TrustServerCertificate=True;
+      - RabbitMQ__Host=rabbitmq
+      - RabbitMQ__Queue=order-confirmed
 
   # API Gateway
   api-gateway:

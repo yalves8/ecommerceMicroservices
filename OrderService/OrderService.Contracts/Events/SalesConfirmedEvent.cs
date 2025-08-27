@@ -2,7 +2,7 @@
 {
     public class SalesConfirmedEvent
     {
-        public Guid OrderId { get; set; }
+        public int OrderId { get; set; }
         public List<SalesConfirmedItem> Items { get; set; } = new();
     }
 }

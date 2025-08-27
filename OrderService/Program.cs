@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using OrderService.OrderService.Infrastructure.Data;
 using OrderService.OrderService.Messaging;
 
-namespace SalesService
+namespace OrderService
 {
     public class Program
     {

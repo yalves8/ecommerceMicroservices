@@ -22,7 +22,7 @@ namespace OrderService.OrderService.Services
             throw new NotImplementedException();
         }
 
-        public async Task<Order?> GetOrderByIdAsync(Guid id)
+        public async Task<Order?> GetOrderByIdAsync(int id)
         {
             return await _repository.GetByIdAsync(id);
         }

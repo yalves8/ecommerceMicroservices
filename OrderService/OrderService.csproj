@@ -14,8 +14,14 @@
     <PackageReference Include="Swashbuckle.AspNetCore" Version="9.0.3" />
   </ItemGroup>
 
-  <ItemGroup>
+  <!--<ItemGroup>
     <ProjectReference Include="..\StockService\StockService.csproj" />
-  </ItemGroup>
+  </ItemGroup>-->
+
+	<ItemGroup>
+		<Reference Include="StockService">
+			<HintPath>../StockService/bin/Release/net9.0/StockService.dll</HintPath>
+		</Reference>
+	</ItemGroup>
 
 </Project>

@@ -5,6 +5,6 @@ namespace OrderService.OrderService.Services
     public interface IOrderService
     {
         Task<Order> CreateOrderAsync(List<(string productId, int quantity)> items);
-        Task<Order?> GetOrderByIdAsync(Guid id);
+        Task<Order?> GetOrderByIdAsync(int id);
     }
 }
