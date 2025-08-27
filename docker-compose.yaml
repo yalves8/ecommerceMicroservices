@@ -62,7 +62,7 @@ services:
       - ASPNETCORE_ENVIRONMENT=Development
       - ConnectionStrings__DefaultConnection=Server=sqlserver;Database=OrderDb;User Id=sa;Password=Pass1234!;TrustServerCertificate=True;
       - RabbitMQ__Host=rabbitmq
-      - RabbitMQ__Queue=order-confirmed
+      - RabbitMQ__Queue=sales-confirmed
 
   # API Gateway
   api-gateway:

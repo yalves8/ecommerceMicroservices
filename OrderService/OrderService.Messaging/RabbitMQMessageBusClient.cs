@@ -7,36 +7,45 @@ namespace OrderService.OrderService.Messaging
 {
     public class RabbitMQMessageBusClient : IMessageBusClient, IDisposable
     {
-        private readonly IConnection _connection;
-        private readonly IChannel _channel;
+        private readonly ILogger<RabbitMQMessageBusClient> _logger;
+        private readonly IConfiguration _config;
+        private IConnection? _connection;
+        private IChannel? _channel;
 
-        public RabbitMQMessageBusClient(IConfiguration configuration)
+        public RabbitMQMessageBusClient(ILogger<RabbitMQMessageBusClient> logger, IConfiguration config)
         {
-            var host = configuration["RabbitMQ:Host"] ?? "rabbitmq"; // docker: rabbitmq, local: localhost
+            _logger = logger;
+            _config = config;
+
+            var host = _config["RabbitMQ:Host"] ?? "localhost";
             var factory = new ConnectionFactory { HostName = host };
 
             _connection = factory.CreateConnectionAsync().GetAwaiter().GetResult();
             _channel = _connection.CreateChannelAsync().GetAwaiter().GetResult();
 
-            _channel.ExchangeDeclareAsync(
-                exchange: "order_exchange",
-                type: ExchangeType.Fanout,
-                durable: true,
-                autoDelete: false,
-                arguments: null
-            ).GetAwaiter().GetResult();
+            var queue = _config["RabbitMQ:Queue"] ?? "sales-confirmed";
 
+            _channel.QueueDeclareAsync(
+                queue: queue,
+                durable: true,
+                exclusive: false,
+                autoDelete: false
+            ).GetAwaiter().GetResult();
         }
 
-        public async Task PublishOrderConfirmed(SalesConfirmedEvent evt)
+        public async Task PublishSalesConfirmedAsync(SalesConfirmedEvent evt, CancellationToken ct = default)
         {
+            var queue = _config["RabbitMQ:Queue"] ?? "sales-confirmed";
+
             var body = Encoding.UTF8.GetBytes(JsonSerializer.Serialize(evt));
 
-            await _channel.BasicPublishAsync(
+            await _channel!.BasicPublishAsync(
                 exchange: "",
-                routingKey: "sales-confirmed",
+                routingKey: queue,
                 body: body
             );
+
+            _logger.LogInformation("SalesConfirmedEvent published to queue {queue}", queue);
         }
 
         public void Dispose()

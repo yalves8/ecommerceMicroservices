@@ -13,24 +13,21 @@ namespace OrderService
 
             builder.WebHost.ConfigureKestrel(options =>
             {
-                options.ListenAnyIP(80); // container: porta 80
+                options.ListenAnyIP(80);
             });
 
             builder.Services.AddControllers();
-            builder.Services.AddEndpointsApiExplorer(); // necessário para Minimal API
-            builder.Services.AddSwaggerGen(); // ativa o Swagger
+            builder.Services.AddEndpointsApiExplorer();
+            builder.Services.AddSwaggerGen(); 
 
-            // Configuração do EF Core
+            // EF Core
             var conn = builder.Configuration.GetConnectionString("DefaultConnection");
             builder.Services.AddDbContext<OrderDbContext>(opt => opt.UseSqlServer(conn));
             builder.Services.AddSingleton<IMessageBusClient, RabbitMQMessageBusClient>();
 
-            // BackgroundService do RabbitMQ (consumidor)
-
-
             var app = builder.Build();
 
-            // Configure middleware
+            // middleware
             if (app.Environment.IsDevelopment())
             {
                 app.UseSwagger();
@@ -44,7 +41,15 @@ namespace OrderService
             using (var scope = app.Services.CreateScope())
             {
                 var db = scope.ServiceProvider.GetRequiredService<OrderDbContext>();
-                db.Database.Migrate();
+                try
+                {
+                    db.Database.Migrate();
+                    Console.WriteLine("Database migrated successfully.");
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"Error migrating database: {ex.Message}");
+                }
             }
 
             app.UseHttpsRedirection();

@@ -2,14 +2,14 @@
 FROM mcr.microsoft.com/dotnet/sdk:9.0 AS build
 WORKDIR /app
 
-# Copia os projetos individuais
+# Copy individual projects
 COPY StockService/ ./StockService/
 COPY OrderService/ ./OrderService/
 
-# Restaura dependências do OrderService (com ProjectReference para StockService)
+# Restore dependency of OrderService
 RUN dotnet restore ./OrderService/OrderService.csproj
 
-# Publica cada projeto em pasta separada
+# Publish both services in separate folders
 RUN dotnet publish ./StockService/StockService.csproj -c Release -o /app/out/StockService
 RUN dotnet publish ./OrderService/OrderService.csproj -c Release -o /app/out/OrderService
 
@@ -17,10 +17,10 @@ RUN dotnet publish ./OrderService/OrderService.csproj -c Release -o /app/out/Ord
 FROM mcr.microsoft.com/dotnet/aspnet:9.0 AS runtime
 WORKDIR /app
 
-# Copia as saídas publicadas
+# Copy the published outputs from the build stage
 COPY --from=build /app/out/StockService ./StockService
 COPY --from=build /app/out/OrderService ./OrderService
 
-# Define o ponto de entrada
+# Define the input arguments for the OrderService
 WORKDIR /app/OrderService
 ENTRYPOINT ["dotnet", "OrderService.dll"]

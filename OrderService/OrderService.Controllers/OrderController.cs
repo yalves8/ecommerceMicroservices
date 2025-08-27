@@ -1,9 +1,9 @@
 using Microsoft.AspNetCore.Mvc;
-using OrderService.OrderService.Contracts;
+using Microsoft.EntityFrameworkCore;
 using OrderService.OrderService.Contracts.Events;
 using OrderService.OrderService.Domain.Entities;
+using OrderService.OrderService.Infrastructure.Data;
 using OrderService.OrderService.Messaging;
-using OrderService.OrderService.Services;
 
 namespace OrderService.Controllers
 {
@@ -11,28 +11,39 @@ namespace OrderService.Controllers
     [Route("[controller]")]
     public class OrderController : ControllerBase
     {
-        private readonly ILogger<OrderController> _logger;
+        private readonly OrderDbContext _db;
         private readonly IMessageBusClient _bus;
 
-        public OrderController(ILogger<OrderController> logger, IMessageBusClient bus)
+        public OrderController(OrderDbContext db, IMessageBusClient bus)
         {
-            _logger = logger;
+            _db = db;
             _bus = bus;
         }
 
-        [HttpPost]
-        public async Task<IActionResult> CreateOrder([FromBody] CreateOrderRequest request)
+        [HttpGet]
+        public async Task<ActionResult<IEnumerable<Order>>> GetOrders()
         {
-            var order = new Order
-            {
-                Items = request.Items.Select(i => new OrderItem
-                {
-                    ProductId = i.ProductId,
-                    Quantity = i.Quantity
-                }).ToList()
-            };
+            var orders = await _db.Orders.Include(o => o.Items).ToListAsync();
+            return Ok(orders);
+        }
 
-            // 2. Criar evento de integração
+        [HttpGet("{id:int}")]
+        public async Task<ActionResult<Order>> GetOrder(int id)
+        {
+            var order = await _db.Orders.Include(o => o.Items)
+                                        .FirstOrDefaultAsync(o => o.Id == id);
+
+            if (order == null) return NotFound();
+            return Ok(order);
+        }
+
+        [HttpPost]
+        public async Task<ActionResult<Order>> CreateOrder(Order order, CancellationToken ct)
+        {
+            _db.Orders.Add(order);
+            await _db.SaveChangesAsync(ct);
+
+            // Cria evento de integração
             var evt = new SalesConfirmedEvent
             {
                 OrderId = order.Id,
@@ -42,15 +53,11 @@ namespace OrderService.Controllers
                     Quantity = i.Quantity
                 }).ToList()
             };
-            // Change this line:
-            // OrderId = order.Id,
 
-            // 3. Publicar no RabbitMQ
-            await _bus.PublishOrderConfirmed(evt);
+            // Publica no RabbitMQ
+            await _bus.PublishSalesConfirmedAsync(evt, ct);
 
-            _logger.LogInformation("Order {OrderId} created and event published", order.Id);
-
-            return Ok(order);
+            return CreatedAtAction(nameof(GetOrder), new { id = order.Id }, order);
         }
     }
 }

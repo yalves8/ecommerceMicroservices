@@ -4,6 +4,6 @@ namespace OrderService.OrderService.Messaging
 {
     public interface IMessageBusClient
     {
-        Task PublishOrderConfirmed(SalesConfirmedEvent evt);
+        Task PublishSalesConfirmedAsync(SalesConfirmedEvent evt, CancellationToken ct = default);
     }
 }
